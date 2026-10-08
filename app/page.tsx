@@ -226,25 +226,25 @@ export default function HomePage() {
   const isAdmin = (session?.user as any)?.role === "ADMIN";
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#C5A059]/30 selection:text-[#0D1F3C]">
+    <div className="h-screen max-h-screen bg-[#FAF8F5] text-[#1A1A1A] flex flex-col font-sans overflow-hidden selection:bg-[#C5A059]/30 selection:text-[#0D1F3C]">
       {/* Top Banner Navigation Bar */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-[#E5DFD5] sticky top-0 z-40 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+      <header className="bg-white/95 backdrop-blur-md border-b border-[#E5DFD5] shrink-0 z-40 shadow-2xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Brand Crest & Title */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#0D1F3C] flex items-center justify-center text-[#C5A059] border border-[#C5A059] shadow-xs">
-              <Crown className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-[#0D1F3C] flex items-center justify-center text-[#C5A059] border border-[#C5A059] shadow-xs">
+              <Crown className="w-4.5 h-4.5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-serif font-bold text-base sm:text-lg text-[#0D1F3C] tracking-tight">
+                <span className="font-serif font-bold text-base text-[#0D1F3C] tracking-tight">
                   Crown of the Realm
                 </span>
                 <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-[#FAF4E8] text-[#9F7E3B] font-semibold text-[10px] uppercase tracking-widest border border-[#E8DCC4]">
                   Britain 2026
                 </span>
               </div>
-              <p className="text-[11px] text-[#6B655D] hidden sm:block">
+              <p className="text-[10px] text-[#6B655D] hidden sm:block">
                 School of Architectural Design • National Heritage Challenge
               </p>
             </div>
@@ -265,7 +265,7 @@ export default function HomePage() {
           {/* Right Action Menu */}
           <div className="flex items-center gap-3">
             {session?.user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {isAdmin ? (
                   <Link
                     href="/admin"
@@ -297,7 +297,7 @@ export default function HomePage() {
                 <button
                   onClick={() => signOut({ fetchOptions: { onSuccess: () => router.refresh() } })}
                   title="Sign Out"
-                  className="p-2 text-[#7A746B] hover:text-red-700 hover:bg-red-50 rounded-xl transition cursor-pointer"
+                  className="p-1.5 text-[#7A746B] hover:text-red-700 hover:bg-red-50 rounded-xl transition cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -305,7 +305,7 @@ export default function HomePage() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0D1F3C] hover:bg-[#162E56] text-white text-xs font-semibold transition shadow-sm"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#0D1F3C] hover:bg-[#162E56] text-white text-xs font-semibold transition shadow-xs"
               >
                 <LogIn className="w-3.5 h-3.5 text-[#C5A059]" />
                 <span>Sign In / Register</span>
@@ -316,67 +316,72 @@ export default function HomePage() {
       </header>
 
       {/* Main Split-Screen Competition Experience */}
-      <main className="flex-1 flex flex-col lg:flex-row min-h-0 h-[calc(100vh-4.5rem)] overflow-hidden">
-        {/* LEFT COLUMN: Expansive Full-Screen Artwork Stage */}
-        <div className="flex-1 relative bg-[#09111E] min-h-[450px] lg:min-h-0 overflow-hidden group">
+      <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
+        {/* LEFT COLUMN: Expansive Artwork Stage with Unzoomed Image */}
+        <div className="flex-1 relative bg-[#0B1422] min-h-0 h-full overflow-hidden flex flex-col justify-between">
           {activeTheme ? (
             <>
-              {/* Main Artwork Image */}
-              <div className="absolute inset-0 w-full h-full">
-                <Image
-                  src={activeTheme.imagePath}
-                  alt={activeTheme.title}
-                  fill
-                  priority
-                  className="object-cover transition-all duration-700 group-hover:scale-102"
-                  unoptimized
-                />
-              </div>
-
-              {/* Sophisticated Vignette and Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/40 pointer-events-none" />
-
-              {/* Top Left Theme Meta Card */}
-              <div className="absolute top-6 left-6 z-10 max-w-md">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold mb-2 shadow-lg">
-                  <span className="text-[#C5A059]">
-                    Theme {String(activeTheme.order).padStart(2, "0")} / 10
+              {/* Top Meta Bar */}
+              <div className="relative z-20 p-4 sm:p-5 flex items-center justify-between gap-4 pointer-events-none">
+                <div className="flex items-center gap-2 pointer-events-auto">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold shadow-lg">
+                    <span className="text-[#C5A059]">
+                      Theme {String(activeTheme.order).padStart(2, "0")} / 10
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-white/40" />
+                    <span className="text-slate-300">{activeTheme.era}</span>
+                  </div>
+                  <span className="hidden md:inline-flex px-3 py-1 rounded-full bg-black/40 backdrop-blur-md text-white/80 text-[11px] border border-white/10">
+                    📍 {activeTheme.subtitle}
                   </span>
-                  <span className="w-1 h-1 rounded-full bg-white/40" />
-                  <span className="text-slate-300">{activeTheme.era}</span>
                 </div>
-                <div className="text-white/80 text-xs font-medium tracking-wide flex items-center gap-1.5 drop-shadow-md">
-                  <span>📍 {activeTheme.subtitle}</span>
-                </div>
-              </div>
 
-              {/* Top Right Inspect Button */}
-              <div className="absolute top-6 right-6 z-10">
                 <button
                   onClick={() => setIsFullscreenImageOpen(true)}
-                  className="p-2.5 rounded-xl bg-black/50 hover:bg-black/75 text-white/90 hover:text-white border border-white/20 backdrop-blur-md transition shadow-lg cursor-pointer flex items-center gap-1.5 text-xs font-medium"
+                  className="pointer-events-auto px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 text-white/90 hover:text-white border border-white/20 backdrop-blur-md transition shadow-lg cursor-pointer flex items-center gap-1.5 text-xs font-medium"
                   title="Inspect architectural detail"
                 >
-                  <Eye className="w-4 h-4" />
-                  <span className="hidden sm:inline">Inspect Fullscreen</span>
+                  <Eye className="w-3.5 h-3.5 text-[#C5A059]" />
+                  <span>Inspect Fullscreen</span>
                 </button>
               </div>
 
-              {/* Bottom Details & Action Console */}
-              <div className="absolute bottom-6 left-6 right-6 z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pointer-events-none">
-                {/* Theme Title & Prompt Description */}
-                <div className="max-w-2xl text-white pointer-events-auto">
-                  <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-2 drop-shadow-md">
-                    {activeTheme.title}
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed drop-shadow-sm bg-black/40 backdrop-blur-md p-4 rounded-2xl border border-white/10 max-w-xl">
+              {/* Main Artwork Image - UNZOOMED with object-contain */}
+              <div className="flex-1 min-h-0 relative w-full overflow-hidden">
+                <div className="absolute inset-0 p-3 sm:p-6 pb-26 sm:pb-22 flex items-center justify-center">
+                  <div className="relative w-full h-full max-w-5xl">
+                    <Image
+                      src={activeTheme.imagePath}
+                      alt={activeTheme.title}
+                      fill
+                      priority
+                      loading="eager"
+                      className="object-contain drop-shadow-2xl"
+                      unoptimized
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Frosted Console: Details & Actions */}
+              <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-20 bg-black/75 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-white/15 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-2xl">
+                {/* Title & Description Snippet */}
+                <div className="max-w-2xl text-white">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h2 className="font-serif text-base sm:text-lg font-bold tracking-tight text-white truncate">
+                      {activeTheme.title}
+                    </h2>
+                    <span className="text-[10px] text-[#C5A059] uppercase tracking-wider hidden sm:inline">
+                      • {activeTheme.subtitle}
+                    </span>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-slate-300 leading-snug line-clamp-2">
                     {activeTheme.description}
                   </p>
                 </div>
 
                 {/* Primary Action Buttons */}
-                <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 pointer-events-auto shrink-0">
-                  {/* Download Template Button */}
+                <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0 justify-end">
                   <button
                     onClick={() =>
                       triggerDownload(
@@ -384,18 +389,17 @@ export default function HomePage() {
                         `soad-britain-theme-${activeTheme.order}-${activeTheme.slug}.jpg`
                       )
                     }
-                    className="flex-1 sm:flex-none px-5 py-3.5 rounded-xl bg-white/95 hover:bg-white text-[#0D1F3C] font-semibold text-xs sm:text-sm transition shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 cursor-pointer border border-white"
+                    className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-[#0D1F3C] font-semibold text-xs transition shadow-md flex items-center justify-center gap-2 cursor-pointer border border-white"
                   >
-                    <Download className="w-4 h-4 text-[#C5A059]" />
+                    <Download className="w-3.5 h-3.5 text-[#C5A059]" />
                     <span>Download Template</span>
                   </button>
 
-                  {/* Submit Entry Button */}
                   <button
                     onClick={() => handleOpenSubmit(activeTheme.id)}
-                    className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#0D1F3C] via-[#162E56] to-[#0D1F3C] hover:from-[#162E56] hover:to-[#0D1F3C] text-white font-semibold text-xs sm:text-sm transition shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 border border-[#C5A059]/60 cursor-pointer"
+                    className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0D1F3C] via-[#162E56] to-[#0D1F3C] hover:from-[#162E56] hover:to-[#0D1F3C] text-white font-semibold text-xs transition shadow-md flex items-center justify-center gap-2 border border-[#C5A059]/60 cursor-pointer"
                   >
-                    <Sparkles className="w-4 h-4 text-[#C5A059]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
                     <span>Submit Creative Entry</span>
                   </button>
                 </div>
@@ -408,40 +412,40 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* RIGHT COLUMN: Heritage Themes Menu & Descriptions */}
-        <aside className="w-full lg:w-96 xl:w-[420px] bg-white border-t lg:border-t-0 lg:border-l border-[#E5DFD5] flex flex-col h-full min-h-0 overflow-hidden shadow-xs">
+        {/* RIGHT COLUMN: Dedicated Scrollable Heritage Themes Menu */}
+        <aside className="w-full lg:w-96 xl:w-[420px] bg-white border-t lg:border-t-0 lg:border-l border-[#E5DFD5] flex flex-col h-full min-h-0 shrink-0 overflow-hidden shadow-xs">
           {/* Aside Header */}
-          <div className="p-5 border-b border-[#E5DFD5] bg-[#FAF8F5]">
+          <div className="p-4 border-b border-[#E5DFD5] bg-[#FAF8F5] shrink-0">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold uppercase tracking-widest text-[#0D1F3C] flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-[#C5A059]" />
-                Competition Themes
+                Heritage Themes
               </span>
-              <span className="text-[11px] font-semibold text-[#8C867D] px-2 py-0.5 rounded-full bg-white border border-[#E5DFD5]">
-                {themes.length} Heritage Sites
+              <span className="text-[10px] font-semibold text-[#8C867D] px-2 py-0.5 rounded-full bg-white border border-[#E5DFD5]">
+                {themes.length} Available
               </span>
             </div>
-            <p className="text-xs text-[#6B655D] leading-snug">
-              Select a historic room, download the high-res template, craft your artwork, and upload your submission.
+            <p className="text-[11px] text-[#6B655D] leading-snug">
+              Select a hall, download the template to create your artwork, then upload your submission.
             </p>
           </div>
 
-          {/* Scrollable Theme Selector List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-[#E5DFD5]">
+          {/* Smooth Scrollable Themes List */}
+          <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-[#E5DFD5] overscroll-contain">
             {themes.map((theme, idx) => {
               const isSelected = idx === selectedThemeIndex;
               return (
                 <div
                   key={theme.id}
                   onClick={() => setSelectedThemeIndex(idx)}
-                  className={`p-4 transition-all cursor-pointer flex gap-3.5 group relative ${
+                  className={`p-3.5 transition-all cursor-pointer flex gap-3 group relative ${
                     isSelected
                       ? "bg-[#FAF5EA] border-l-4 border-l-[#0D1F3C]"
                       : "hover:bg-[#FAF8F5] border-l-4 border-l-transparent"
                   }`}
                 >
                   {/* Thumbnail */}
-                  <div className="w-24 h-20 rounded-xl overflow-hidden shrink-0 relative border border-[#E5DFD5] shadow-2xs group-hover:shadow-xs transition">
+                  <div className="w-20 h-16 rounded-lg overflow-hidden shrink-0 relative border border-[#E5DFD5] shadow-2xs group-hover:shadow-xs transition bg-slate-100">
                     <Image
                       src={theme.imagePath}
                       alt={theme.title}
@@ -449,7 +453,7 @@ export default function HomePage() {
                       className="object-cover group-hover:scale-105 transition duration-300"
                       unoptimized
                     />
-                    <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/60 text-[9px] font-bold text-white backdrop-blur-2xs">
+                    <div className="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-black/60 text-[9px] font-bold text-white backdrop-blur-2xs">
                       #{theme.order}
                     </div>
                   </div>
@@ -458,12 +462,12 @@ export default function HomePage() {
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between gap-1 mb-0.5">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#9F7E3B]">
+                        <span className="text-[9px] font-semibold uppercase tracking-wider text-[#9F7E3B]">
                           {theme.era.split("(")[0]}
                         </span>
                         {isSelected && (
-                          <span className="w-4 h-4 rounded-full bg-[#0D1F3C] text-[#C5A059] flex items-center justify-center shrink-0">
-                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                          <span className="w-3.5 h-3.5 rounded-full bg-[#0D1F3C] text-[#C5A059] flex items-center justify-center shrink-0">
+                            <Check className="w-2 h-2 stroke-[3]" />
                           </span>
                         )}
                       </div>
@@ -475,12 +479,12 @@ export default function HomePage() {
                       >
                         {theme.title}
                       </h4>
-                      <p className="text-[11px] text-[#7A746B] truncate">
+                      <p className="text-[10px] text-[#7A746B] truncate">
                         {theme.subtitle}
                       </p>
                     </div>
 
-                    <p className="text-[11px] text-[#5A554E] line-clamp-2 mt-1 leading-relaxed">
+                    <p className="text-[10px] text-[#5A554E] line-clamp-2 mt-1 leading-relaxed">
                       {theme.description}
                     </p>
                   </div>
@@ -490,20 +494,20 @@ export default function HomePage() {
           </div>
 
           {/* Aside Footer Action Quick Bar */}
-          <div className="p-4 bg-[#FAF8F5] border-t border-[#E5DFD5] flex items-center justify-between gap-3">
+          <div className="p-3.5 bg-[#FAF8F5] border-t border-[#E5DFD5] flex items-center justify-between gap-2.5 shrink-0">
             <button
               onClick={() => activeTheme && triggerDownload(activeTheme.imagePath, `${activeTheme.slug}.jpg`)}
-              className="flex-1 py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 border border-[#E5DFD5] text-[#0D1F3C] text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+              className="flex-1 py-2 px-3 rounded-xl bg-white hover:bg-slate-50 border border-[#E5DFD5] text-[#0D1F3C] text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
             >
               <Download className="w-3.5 h-3.5 text-[#C5A059]" />
-              <span>Download Selected</span>
+              <span>Download</span>
             </button>
             <button
               onClick={() => handleOpenSubmit()}
-              className="flex-1 py-2.5 px-3 rounded-xl bg-[#0D1F3C] hover:bg-[#162E56] text-white text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+              className="flex-1 py-2 px-3 rounded-xl bg-[#0D1F3C] hover:bg-[#162E56] text-white text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
             >
               <Upload className="w-3.5 h-3.5 text-[#C5A059]" />
-              <span>Upload Work</span>
+              <span>Submit Work</span>
             </button>
           </div>
         </aside>
