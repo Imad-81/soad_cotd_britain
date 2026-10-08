@@ -314,7 +314,7 @@ export default function AdminPage() {
                 </span>
               </div>
               <p className="text-xs text-[#6B655D]">
-                School of Architectural Design • COTD Britain 2026
+                School of Arts and Design (SOAD) • COTD Britain 2026
               </p>
             </div>
           </div>

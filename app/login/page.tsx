@@ -123,7 +123,7 @@ function LoginForm() {
             </div>
           </Link>
           <div className="inline-block px-3 py-1 mb-2 rounded-full border border-[#C5A059]/40 bg-[#FAF4E8] text-[#9F7E3B] text-xs font-semibold tracking-widest uppercase">
-            School of Architectural Design • Britain
+            School of Arts and Design (SOAD) • Britain
           </div>
           <h1 className="font-serif text-3xl font-bold text-[#0D1F3C] tracking-tight">
             Crown of the Realm

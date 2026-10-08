@@ -15,9 +15,9 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Crown of the Realm | British Architectural & Creative Challenge 2026",
+  title: "Crown of the Realm | School of Arts and Design (SOAD) • British Challenge 2026",
   description:
-    "An open British artistic competition inviting creators across the globe to reimagine Britain's historic interiors, stately palaces, and architectural treasures.",
+    "School of Arts and Design (SOAD) presents Crown of the Realm — an open British artistic competition inviting creators across the globe to reimagine Britain's historic interiors and architectural treasures.",
 };
 
 export default function RootLayout({

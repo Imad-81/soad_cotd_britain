@@ -246,7 +246,7 @@ export default function HomePage() {
                 </span>
               </div>
               <p className="text-[10px] text-[#6B655D] hidden sm:block">
-                School of Architectural Design • National Heritage Challenge
+                School of Arts and Design (SOAD) • National Heritage Challenge
               </p>
             </div>
           </div>
@@ -332,7 +332,7 @@ export default function HomePage() {
                 <div className="flex items-center gap-2 pointer-events-auto">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold shadow-lg">
                     <span className="text-[#C5A059]">
-                      Theme {String(activeTheme.order).padStart(2, "0")} / 10
+                      Theme {String(activeTheme.order).padStart(2, "0")} / {String(themes.length || 4).padStart(2, "0")}
                     </span>
                     <span className="w-1 h-1 rounded-full bg-white/40" />
                     <span className="text-slate-300">{activeTheme.era}</span>
