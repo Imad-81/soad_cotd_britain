@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn, useSession } from "@/lib/auth-client";
+import { signIn, signUp, signOut, useSession } from "@/lib/auth-client";
 import {
   Crown,
   KeyRound,
@@ -15,6 +15,7 @@ import {
   Sparkles,
   AlertCircle,
   CheckCircle2,
+  LogOut,
 } from "lucide-react";
 
 function LoginForm() {
@@ -32,17 +33,6 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // If already authenticated, redirect appropriately
-  useEffect(() => {
-    if (session?.user) {
-      if ((session.user as any).role === "ADMIN") {
-        router.push("/admin");
-      } else {
-        router.push(redirectTarget);
-      }
-    }
-  }, [session, router, redirectTarget]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -57,23 +47,18 @@ function LoginForm() {
         });
 
         if (res.error) {
-          setError(res.error.message || "Invalid credentials. Please verify and try again.");
+          setError(res.error.message || "Invalid credentials. Please verify your email and password.");
           setLoading(false);
           return;
         }
 
-        // Fetch fresh session or check role
-        const sessionRes = await fetch("/api/auth/get-session");
-        const sessionData = await sessionRes.json().catch(() => null);
-        const userRole = sessionData?.user?.role;
+        const userRole = (res.data?.user as any)?.role;
+        const isAdmin = userRole === "ADMIN" || email.trim().toLowerCase() === "admin@crown.soad.ac.uk";
+        const target = isAdmin ? "/admin" : redirectTarget;
 
-        setSuccess("Signing you in to the Realm...");
+        setSuccess("Authentication successful. Entering the Realm...");
         setTimeout(() => {
-          if (userRole === "ADMIN" || email.trim().toLowerCase() === "admin@crown.soad.ac.uk") {
-            router.push("/admin");
-          } else {
-            router.push(redirectTarget);
-          }
+          window.location.href = target;
         }, 300);
       } else {
         // Sign up flow
@@ -83,31 +68,37 @@ function LoginForm() {
           return;
         }
 
-        const res = await fetch("/api/auth/sign-up/email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name.trim(),
-            email: email.trim().toLowerCase(),
-            password,
-          }),
+        const res = await signUp.email({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          password,
         });
 
-        const data = await res.json();
-        if (!res.ok || data.error) {
-          setError(data.error?.message || data.error || "Failed to create account.");
+        if (res.error) {
+          setError(res.error.message || "Failed to create account. Email may already be in use.");
           setLoading(false);
           return;
         }
 
         setSuccess("Account successfully created! Welcoming you to the competition...");
         setTimeout(() => {
-          router.push(redirectTarget);
-        }, 500);
+          window.location.href = redirectTarget;
+        }, 400);
       }
     } catch (err: any) {
       console.error(err);
       setError(err?.message || "An unexpected error occurred. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  const handleSignOutCurrent = async () => {
+    try {
+      setLoading(true);
+      await signOut();
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
       setLoading(false);
     }
   };
@@ -192,6 +183,38 @@ function LoginForm() {
               )}
             </button>
           </div>
+
+          {/* Active Session Notification */}
+          {session?.user && (
+            <div className="mb-5 p-3.5 bg-[#FAF6EE] border border-[#E8DCC4] rounded-xl flex items-center justify-between gap-3 text-xs">
+              <div className="min-w-0">
+                <p className="font-semibold text-[#0D1F3C] truncate">
+                  Logged in as {session.user.name}
+                </p>
+                <p className="text-[#6E634A] truncate text-[11px]">{session.user.email}</p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const isAdmin = (session.user as any)?.role === "ADMIN";
+                    window.location.href = isAdmin ? "/admin" : redirectTarget;
+                  }}
+                  className="px-2.5 py-1 bg-[#0D1F3C] text-white rounded-lg text-[11px] font-medium hover:bg-[#162E56] transition cursor-pointer"
+                >
+                  Continue →
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSignOutCurrent}
+                  title="Sign out to switch account"
+                  className="p-1 text-[#8C867D] hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Feedback Alerts */}
           {error && (

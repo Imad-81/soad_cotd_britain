@@ -110,12 +110,12 @@ export default function AdminPage() {
   useEffect(() => {
     if (!sessionLoading) {
       if (!session?.user) {
-        router.push("/login?redirect=/admin");
+        window.location.href = "/login?redirect=/admin";
       } else if ((session.user as any).role !== "ADMIN") {
-        router.push("/?error=unauthorized");
+        window.location.href = "/?error=unauthorized";
       }
     }
-  }, [session, sessionLoading, router]);
+  }, [session, sessionLoading]);
 
   // Fetch initial data
   const fetchData = async () => {
@@ -329,7 +329,10 @@ export default function AdminPage() {
             </Link>
 
             <button
-              onClick={() => signOut({ fetchOptions: { onSuccess: () => router.push("/login") } })}
+              onClick={async () => {
+                await signOut();
+                window.location.href = "/login";
+              }}
               className="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />

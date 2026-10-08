@@ -137,8 +137,9 @@ export default function HomePage() {
 
   // Handle open submit modal for a specific theme
   const handleOpenSubmit = (themeId?: string) => {
+    if (sessionLoading) return;
     if (!session?.user) {
-      router.push("/login?redirect=/");
+      window.location.href = "/login?redirect=/";
       return;
     }
     if (themeId) {
@@ -264,7 +265,9 @@ export default function HomePage() {
 
           {/* Right Action Menu */}
           <div className="flex items-center gap-3">
-            {session?.user ? (
+            {sessionLoading ? (
+              <div className="h-8 w-24 bg-slate-100 rounded-xl animate-pulse" />
+            ) : session?.user ? (
               <div className="flex items-center gap-2.5">
                 {isAdmin ? (
                   <Link
@@ -295,7 +298,10 @@ export default function HomePage() {
                 </div>
 
                 <button
-                  onClick={() => signOut({ fetchOptions: { onSuccess: () => router.refresh() } })}
+                  onClick={async () => {
+                    await signOut();
+                    window.location.href = "/";
+                  }}
                   title="Sign Out"
                   className="p-1.5 text-[#7A746B] hover:text-red-700 hover:bg-red-50 rounded-xl transition cursor-pointer"
                 >
