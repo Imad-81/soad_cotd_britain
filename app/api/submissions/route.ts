@@ -17,7 +17,24 @@ export async function GET(req: NextRequest) {
 
     const submissions = await prisma.submission.findMany({
       where: { userId: session.user.id },
-      include: {
+      select: {
+        id: true,
+        themeId: true,
+        userId: true,
+        participantName: true,
+        participantEmail: true,
+        title: true,
+        description: true,
+        originalFilename: true,
+        fileUrl: true,
+        fileSize: true,
+        mimeType: true,
+        rating: true,
+        feedback: true,
+        status: true,
+        award: true,
+        createdAt: true,
+        updatedAt: true,
         theme: {
           select: {
             title: true,
@@ -100,17 +117,10 @@ export async function POST(req: NextRequest) {
     const uniquePrefix = `${Date.now()}_${crypto.randomBytes(6).toString("hex")}`;
     const storedFileName = `${uniquePrefix}_${sanitizedBase}${extension}`;
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const destinationPath = path.join(uploadDir, storedFileName);
 
-    await fs.writeFile(destinationPath, buffer);
-
-    const fileUrl = `/uploads/${storedFileName}`;
-
+    // 1. Create submission with fileData stored directly in Neon PostgreSQL
     const submission = await prisma.submission.create({
       data: {
         themeId: theme.id,
@@ -120,7 +130,8 @@ export async function POST(req: NextRequest) {
         title,
         description,
         originalFilename: originalName,
-        fileUrl,
+        fileUrl: "", // Updated below with permanent API URL
+        fileData: buffer,
         fileSize: file.size,
         mimeType: file.type || "application/octet-stream",
         status: "PENDING",
@@ -130,10 +141,29 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const fileUrl = `/api/submissions/${submission.id}/file`;
+    await prisma.submission.update({
+      where: { id: submission.id },
+      data: { fileUrl },
+    });
+    submission.fileUrl = fileUrl;
+
+    // 2. Best-effort local file write (works locally; safely skipped on Vercel's read-only filesystem)
+    try {
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      await fs.mkdir(uploadDir, { recursive: true });
+      const destinationPath = path.join(uploadDir, storedFileName);
+      await fs.writeFile(destinationPath, buffer);
+    } catch {
+      // EROFS in serverless environments is expected and safely ignored
+    }
+
+    const { fileData: _unused, ...safeSubmission } = submission as any;
+
     return NextResponse.json({
       success: true,
       message: "Submission received successfully!",
-      submission,
+      submission: safeSubmission,
     });
   } catch (error) {
     console.error("Submission error:", error);

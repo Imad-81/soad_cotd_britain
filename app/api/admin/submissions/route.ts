@@ -29,7 +29,24 @@ export async function GET(req: NextRequest) {
 
     const submissions = await prisma.submission.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        themeId: true,
+        userId: true,
+        participantName: true,
+        participantEmail: true,
+        title: true,
+        description: true,
+        originalFilename: true,
+        fileUrl: true,
+        fileSize: true,
+        mimeType: true,
+        rating: true,
+        feedback: true,
+        status: true,
+        award: true,
+        createdAt: true,
+        updatedAt: true,
         theme: {
           select: {
             id: true,

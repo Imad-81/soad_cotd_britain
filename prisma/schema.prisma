@@ -94,6 +94,7 @@ model Submission {
   description      String
   originalFilename String
   fileUrl          String
+  fileData         Bytes?
   fileSize         Int
   mimeType         String
   rating           Float?

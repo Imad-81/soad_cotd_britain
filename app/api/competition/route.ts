@@ -15,7 +15,24 @@ export async function GET(req: NextRequest) {
           rating: { not: null },
         },
         orderBy: [{ rating: "desc" }, { createdAt: "asc" }],
-        include: {
+        select: {
+          id: true,
+          themeId: true,
+          userId: true,
+          participantName: true,
+          participantEmail: true,
+          title: true,
+          description: true,
+          originalFilename: true,
+          fileUrl: true,
+          fileSize: true,
+          mimeType: true,
+          rating: true,
+          feedback: true,
+          status: true,
+          award: true,
+          createdAt: true,
+          updatedAt: true,
           theme: {
             select: {
               title: true,
