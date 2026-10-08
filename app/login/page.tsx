@@ -10,7 +10,6 @@ import {
   Mail,
   User,
   ArrowRight,
-  ShieldCheck,
   Building2,
   Sparkles,
   AlertCircle,
@@ -101,13 +100,6 @@ function LoginForm() {
       console.error(err);
       setLoading(false);
     }
-  };
-
-  const autofillAdmin = () => {
-    setMode("signin");
-    setEmail("admin@crown.soad.ac.uk");
-    setPassword("CrownAdmin2026!");
-    setError(null);
   };
 
   return (
@@ -306,32 +298,6 @@ function LoginForm() {
               )}
             </button>
           </form>
-
-          {/* Quick-fill helper for seeded Admin */}
-          <div className="mt-6 pt-5 border-t border-[#E5DFD5]">
-            <div className="bg-[#FAF6EE] border border-[#E8DCC4] rounded-xl p-3 text-xs text-[#5C4F34]">
-              <div className="flex items-center justify-between mb-1.5 font-semibold text-[#3C321E]">
-                <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#C5A059]" />
-                  Seeded Jury / Admin Credentials
-                </span>
-                <button
-                  type="button"
-                  onClick={autofillAdmin}
-                  className="text-[11px] bg-white px-2 py-0.5 rounded border border-[#D5C299] text-[#7B5E1E] hover:bg-[#FAF4E8] font-medium transition cursor-pointer"
-                >
-                  Auto-fill
-                </button>
-              </div>
-              <p className="text-[11px] leading-relaxed text-[#6E634A]">
-                Login with admin credentials will automatically open the{" "}
-                <span className="font-semibold text-[#0D1F3C]">Curator Admin Panel</span>.
-              </p>
-              <div className="mt-1.5 font-mono text-[10px] text-[#4A4232] select-all bg-white/70 px-2 py-1 rounded border border-[#E2D5BA]">
-                admin@crown.soad.ac.uk • CrownAdmin2026!
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Footer Navigation */}
