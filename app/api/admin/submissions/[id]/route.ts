@@ -13,7 +13,7 @@ export async function PATCH(
       headers: req.headers,
     });
 
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
+    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 403 }
@@ -24,7 +24,12 @@ export async function PATCH(
     const body = await req.json();
     const { rating, feedback, status, award } = body;
 
-    const data: any = {};
+    const data: {
+      rating?: number | null;
+      feedback?: string;
+      status?: string;
+      award?: string | null;
+    } = {};
     if (rating !== undefined) {
       data.rating = rating === null || rating === "" ? null : parseFloat(rating);
     }
@@ -65,7 +70,7 @@ export async function DELETE(
       headers: req.headers,
     });
 
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
+    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 403 }
@@ -89,7 +94,7 @@ export async function DELETE(
       const filePath = path.join(process.cwd(), "public", existing.fileUrl);
       try {
         await fs.unlink(filePath);
-      } catch (e) {
+      } catch {
         // file might already be removed
       }
     }

@@ -15,18 +15,12 @@ import {
   Sparkles,
   Award,
   Layers,
-  Info,
   X,
-  User,
   LogOut,
   LogIn,
   Shield,
-  FileCheck,
   Star,
-  ExternalLink,
-  Sliders,
   History,
-  FileText,
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
@@ -42,6 +36,23 @@ interface ThemeItem {
   order: number;
 }
 
+interface SubmissionResult {
+  id: string;
+  title: string;
+  description?: string;
+  originalFilename?: string;
+  fileUrl: string;
+  rating?: number | null;
+  feedback?: string | null;
+  status?: string;
+  award?: string | null;
+  participantName?: string;
+  participantEmail?: string;
+  theme?: ThemeItem;
+  themeId?: string;
+  createdAt?: string;
+}
+
 interface CompetitionData {
   config: {
     title: string;
@@ -50,7 +61,7 @@ interface CompetitionData {
     resultsAnnouncement?: string;
     publishedAt?: string;
   };
-  publishedResults: any[];
+  publishedResults: SubmissionResult[];
 }
 
 export default function HomePage() {
@@ -60,7 +71,6 @@ export default function HomePage() {
   const [themes, setThemes] = useState<ThemeItem[]>([]);
   const [selectedThemeIndex, setSelectedThemeIndex] = useState(0);
   const [competition, setCompetition] = useState<CompetitionData | null>(null);
-  const [loading, setLoading] = useState(true);
 
   // Modals & Panels
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
@@ -79,7 +89,7 @@ export default function HomePage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // User Submissions State
-  const [mySubmissions, setMySubmissions] = useState<any[]>([]);
+  const [mySubmissions, setMySubmissions] = useState<SubmissionResult[]>([]);
   const [loadingMySubmissions, setLoadingMySubmissions] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,7 +98,6 @@ export default function HomePage() {
   useEffect(() => {
     async function loadInitial() {
       try {
-        setLoading(true);
         const [themesRes, compRes] = await Promise.all([
           fetch("/api/themes"),
           fetch("/api/competition"),
@@ -109,8 +118,6 @@ export default function HomePage() {
         }
       } catch (err) {
         console.error("Failed to load competition data:", err);
-      } finally {
-        setLoading(false);
       }
     }
     loadInitial();
@@ -139,7 +146,7 @@ export default function HomePage() {
   const handleOpenSubmit = (themeId?: string) => {
     if (sessionLoading) return;
     if (!session?.user) {
-      window.location.href = "/login?redirect=/";
+      router.push("/login?redirect=/");
       return;
     }
     if (themeId) {
@@ -206,9 +213,13 @@ export default function HomePage() {
 
       // Refresh my submissions
       loadMySubmissions();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setSubmitError(err?.message || "An error occurred while uploading your entry.");
+      const message =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while uploading your entry.";
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -224,7 +235,7 @@ export default function HomePage() {
     document.body.removeChild(link);
   };
 
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
 
   return (
     <div className="h-screen max-h-screen bg-[#FAF8F5] text-[#1A1A1A] flex flex-col font-sans overflow-hidden selection:bg-[#C5A059]/30 selection:text-[#0D1F3C]">
@@ -300,7 +311,8 @@ export default function HomePage() {
                 <button
                   onClick={async () => {
                     await signOut();
-                    window.location.href = "/";
+                    router.push("/");
+                    router.refresh();
                   }}
                   title="Sign Out"
                   className="p-1.5 text-[#7A746B] hover:text-red-700 hover:bg-red-50 rounded-xl transition cursor-pointer"
@@ -781,7 +793,7 @@ export default function HomePage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="text-[10px] font-semibold text-[#9F7E3B]">
-                          {sub.theme.title}
+                          {sub.theme?.title}
                         </span>
                         <h4 className="font-serif text-xs font-bold text-[#0D1F3C] truncate">
                           {sub.title}
@@ -817,7 +829,7 @@ export default function HomePage() {
 
                     {competition?.config?.areResultsPublished && sub.feedback && (
                       <p className="text-[11px] text-[#5A554E] italic bg-white p-2.5 rounded-lg border border-[#E5DFD5]">
-                        "{sub.feedback}"
+                        &quot;{sub.feedback}&quot;
                       </p>
                     )}
                   </div>
@@ -866,7 +878,7 @@ export default function HomePage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {competition.publishedResults.map((item, idx) => (
+                  {competition.publishedResults.map((item) => (
                     <div
                       key={item.id}
                       className="bg-[#FAF8F5] rounded-2xl border border-[#E5DFD5] overflow-hidden shadow-xs hover:shadow-md transition"
@@ -910,7 +922,7 @@ export default function HomePage() {
                         )}
                         {item.feedback && (
                           <div className="mt-3 pt-2.5 border-t border-[#E5DFD5] text-[11px] text-[#3F3931] italic bg-white p-2.5 rounded-xl border border-[#E5DFD5]">
-                            "{item.feedback}"
+                            &quot;{item.feedback}&quot;
                           </div>
                         )}
                       </div>

@@ -10,7 +10,6 @@ import {
   LogOut,
   ExternalLink,
   Search,
-  Filter,
   CheckCircle,
   Clock,
   Star,
@@ -21,8 +20,6 @@ import {
   SlidersHorizontal,
   Eye,
   Download,
-  AlertTriangle,
-  Send,
   Building,
   RefreshCw,
 } from "lucide-react";
@@ -109,16 +106,17 @@ export default function AdminPage() {
   // Auth gate check
   useEffect(() => {
     if (!sessionLoading) {
+      const role = (session?.user as { role?: string })?.role;
       if (!session?.user) {
-        window.location.href = "/login?redirect=/admin";
-      } else if ((session.user as any).role !== "ADMIN") {
-        window.location.href = "/?error=unauthorized";
+        router.push("/login?redirect=/admin");
+      } else if (role !== "ADMIN") {
+        router.push("/?error=unauthorized");
       }
     }
-  }, [session, sessionLoading]);
+  }, [session, sessionLoading, router]);
 
-  // Fetch initial data
-  const fetchData = async () => {
+  // Refresh data handler
+  const handleRefresh = async () => {
     try {
       setLoading(true);
       const [subsRes, statsRes, themesRes] = await Promise.all([
@@ -140,16 +138,54 @@ export default function AdminPage() {
       }
       if (themesData.success) setThemes(themesData.themes || []);
     } catch (err) {
-      console.error("Failed to load admin data:", err);
+      console.error("Failed to refresh admin data:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (session?.user && (session.user as any).role === "ADMIN") {
-      fetchData();
+    const role = (session?.user as { role?: string })?.role;
+    if (!session?.user || role !== "ADMIN") return;
+
+    let isSubscribed = true;
+
+    async function loadAdminData() {
+      try {
+        const [subsRes, statsRes, themesRes] = await Promise.all([
+          fetch("/api/admin/submissions"),
+          fetch("/api/admin/stats"),
+          fetch("/api/themes"),
+        ]);
+
+        const [subsData, statsData, themesData] = await Promise.all([
+          subsRes.json(),
+          statsRes.json(),
+          themesRes.json(),
+        ]);
+
+        if (!isSubscribed) return;
+
+        if (subsData.success) setSubmissions(subsData.submissions || []);
+        if (statsData.success) {
+          setStats(statsData.stats);
+          setAnnouncementText(statsData.stats.resultsAnnouncement || "");
+        }
+        if (themesData.success) setThemes(themesData.themes || []);
+      } catch (err) {
+        console.error("Failed to load admin data:", err);
+      } finally {
+        if (isSubscribed) {
+          setLoading(false);
+        }
+      }
     }
+
+    loadAdminData();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [session]);
 
   // Open review modal
@@ -331,7 +367,7 @@ export default function AdminPage() {
             <button
               onClick={async () => {
                 await signOut();
-                window.location.href = "/login";
+                router.push("/login");
               }}
               className="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 transition cursor-pointer"
             >
@@ -512,7 +548,7 @@ export default function AdminPage() {
               Showing {filteredSubmissions.length} of {submissions.length} entries
             </span>
             <button
-              onClick={fetchData}
+              onClick={handleRefresh}
               title="Refresh"
               className="p-2 text-[#7A746B] hover:text-[#0D1F3C] hover:bg-[#FAF8F5] rounded-lg transition cursor-pointer"
             >
@@ -618,7 +654,7 @@ export default function AdminPage() {
                       </div>
                       {sub.feedback && (
                         <div className="pt-1.5 border-t border-[#E5DFD5] text-[11px] text-[#554E45] italic">
-                          "{sub.feedback}"
+                          &quot;{sub.feedback}&quot;
                         </div>
                       )}
                     </div>
@@ -685,7 +721,7 @@ export default function AdminPage() {
                     unoptimized
                   />
                   <div className="absolute top-2 left-2 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-xs">
-                    Participant's Artwork
+                    Participant&apos;s Artwork
                   </div>
                   <button
                     onClick={() => setPreviewImage(reviewingItem.fileUrl)}

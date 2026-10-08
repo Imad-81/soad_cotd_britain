@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
       headers: req.headers,
     });
 
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
+    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "Unauthorized access: Admin privilege required." },
         { status: 403 }
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     const themeId = searchParams.get("themeId");
     const status = searchParams.get("status");
 
-    const where: any = {};
+    const where: { themeId?: string; status?: string } = {};
     if (themeId && themeId !== "all") {
       where.themeId = themeId;
     }
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, submissions });
   } catch (error) {
-    if ((error as any)?.digest === "NEXT_PRERENDER_INTERRUPTED") {
+    if ((error as { digest?: string })?.digest === "NEXT_PRERENDER_INTERRUPTED") {
       throw error;
     }
     console.error("Admin submissions fetch error:", error);

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn, signUp, signOut, useSession } from "@/lib/auth-client";
 import {
@@ -10,19 +10,16 @@ import {
   Mail,
   User,
   ArrowRight,
-  Building2,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
   LogOut,
 } from "lucide-react";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTarget = searchParams.get("redirect") || "/";
 
-  const { data: session, isPending: sessionLoading } = useSession();
+  const { data: session } = useSession();
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
@@ -51,7 +48,7 @@ function LoginForm() {
           return;
         }
 
-        const userRole = (res.data?.user as any)?.role;
+        const userRole = (res.data?.user as { role?: string })?.role;
         const isAdmin = userRole === "ADMIN" || email.trim().toLowerCase() === "admin@crown.soad.ac.uk";
         const target = isAdmin ? "/admin" : redirectTarget;
 
@@ -84,9 +81,10 @@ function LoginForm() {
           window.location.href = redirectTarget;
         }, 400);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err?.message || "An unexpected error occurred. Please try again.");
+      const message = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      setError(message);
       setLoading(false);
     }
   };
@@ -189,7 +187,7 @@ function LoginForm() {
                 <button
                   type="button"
                   onClick={() => {
-                    const isAdmin = (session.user as any)?.role === "ADMIN";
+                    const isAdmin = (session.user as { role?: string })?.role === "ADMIN";
                     window.location.href = isAdmin ? "/admin" : redirectTarget;
                   }}
                   className="px-2.5 py-1 bg-[#0D1F3C] text-white rounded-lg text-[11px] font-medium hover:bg-[#162E56] transition cursor-pointer"

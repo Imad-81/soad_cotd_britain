@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
       headers: req.headers,
     });
 
-    if (!session?.user || (session.user as any).role !== "ADMIN") {
+    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "Unauthorized access" },
         { status: 403 }
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    if ((error as any)?.digest === "NEXT_PRERENDER_INTERRUPTED") {
+    if ((error as { digest?: string })?.digest === "NEXT_PRERENDER_INTERRUPTED") {
       throw error;
     }
     console.error("Admin stats fetch error:", error);

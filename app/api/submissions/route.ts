@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, submissions });
   } catch (error) {
-    if ((error as any)?.digest === "NEXT_PRERENDER_INTERRUPTED") {
+    if ((error as { digest?: string })?.digest === "NEXT_PRERENDER_INTERRUPTED") {
       throw error;
     }
     console.error("Error fetching user submissions:", error);
@@ -158,7 +158,10 @@ export async function POST(req: NextRequest) {
       // EROFS in serverless environments is expected and safely ignored
     }
 
-    const { fileData: _unused, ...safeSubmission } = submission as any;
+    const safeSubmission = {
+      ...submission,
+      fileData: undefined,
+    };
 
     return NextResponse.json({
       success: true,
